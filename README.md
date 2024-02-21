@@ -9,6 +9,6 @@
 - Gemini 1.0 Pro Vision
   
 ##### To run this project, run `git clone https://github.com/RohanSardar/sc24`
-##### Enter into sc24 directory 
+##### Enter into `sc24` directory 
 ##### Install requirements by `pip install requirements.txt`
 ##### And then `streamlit run app.py`
