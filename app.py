@@ -40,7 +40,7 @@ if 'validity' not in st.session_state:
 st.set_page_config(page_title='Environment Care', page_icon=':herb:', initial_sidebar_state='collapsed')
 
 # Setting the sidebar
-st.sidebar.title('Environment App')
+st.sidebar.title('Environment Care')
 st.sidebar.caption('This is a prototype web app to encourage people to take care of the environment in a different\
                    way through a competition based leaderboard system, where the points indicate how much contribution\
                    they have done. Every user can also see how others are contributing.')
