@@ -272,7 +272,7 @@ if st.session_state['activate'] == True:
         db.child('Forums')
         col1, col2 = st.columns([0.8, 0.2])
         with col1:
-            st.write(db.get().val()['Forums'])
+            st.write(db.child('Forums').get().val())
             #st.selectbox('Available topics')
         with col2:
             nForum = st.button('Create new')
