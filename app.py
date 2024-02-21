@@ -55,6 +55,7 @@ if st.session_state['activate'] == True:
                 try:
                     user = auth.sign_in_with_email_and_password(e, p)
                     st.success('Login successful')
+                    time.sleep(2)
                     st.session_state['user'] = user
                     st.session_state['email'] = email
                     st.session_state['password'] = password
@@ -107,7 +108,7 @@ if st.session_state['activate'] == True:
         col1, col2 = st.columns([0.8, 0.2], gap='large')
         with col1:
             st.title('Welcome {}'.format(db.child(st.session_state['user']['localId']).child('Handle').get().val()))
-        op = st.radio('Go to', ['Home', 'Search', 'Leaderboard', 'AI Support', 'My Account', 'Logout'], \
+        op = st.radio('Navigation', ['Home', 'Search', 'Leaderboard', 'AI Support', 'My Account', 'Logout'], \
                       horizontal=True, key='op')
 
     # Defining the workflow when 'My Account' is selected
@@ -233,8 +234,8 @@ if st.session_state['activate'] == True:
                     x = storage.child(user['localId']).child('Posts').child(results['name']).child('pics').put(img)
                     url = storage.child(user['localId']).child('Posts').child(results['name']).child('pics').get_url(x)
                     db.child(user['localId']).child('Posts').child(results['name']).child('pics').set(url)
-
                     st.balloons()
+                    time.sleep(2)
                     st.rerun()
             if st.session_state['validity'] == 'no':
                 st.warning('Image not accepted')
