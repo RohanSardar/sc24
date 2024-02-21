@@ -1,3 +1,4 @@
+python
 streamlit==1.31.1
 Pyrebase4==4.7.1
 numpy==1.26.4
