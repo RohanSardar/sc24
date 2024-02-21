@@ -1,10 +1,14 @@
+# Importing necessary libraries and modules
 import streamlit as st
 import pyrebase
 import datetime
 import numpy as np
 import time
 import checkImage
+import geminiPro
+import geminiProVision
 
+# Configuring firebase
 firebaseConfig = {
   'apiKey': "AIzaSyDtNz3j2sKU2IXROB6bP-DaGO6kzehlqF4",
   'authDomain': "solutionschallenge2024.firebaseapp.com",
@@ -16,11 +20,13 @@ firebaseConfig = {
   'measurementId': "G-VR7MSJEZCB"
 }
 
+# Initializing the firebase authentication, database and storage
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
 db = firebase.database()
 storage = firebase.storage()
 
+# Initializing some important key-value pairs in session state
 if 'choice' not in st.session_state:
     st.session_state['choice'] = False
 if 'op' not in st.session_state:
@@ -30,10 +36,19 @@ if 'activate' not in st.session_state:
 if 'validity' not in st.session_state:
     st.session_state['validity'] = 'temp'
 
-st.set_page_config(page_title='Environment Care', page_icon=':herb:')
+# Configuring the page
+st.set_page_config(page_title='Environment Care', page_icon=':herb:', initial_sidebar_state='collapsed')
 
+# Setting the sidebar
+st.sidebar.title('Environment App')
+st.sidebar.caption('This is a prototype web app to encourage people to take care of the environment in a different\
+                   way through a competition based leaderboard system, where the points indicate how much contribution\
+                   they have done. Every user can also see how others are contributing.')
+
+# Initializing the page
 if st.session_state['activate'] == True:
 
+    # Defining the workflow when 'Logout' is selected
     if st.session_state['op'] == 'Logout':
         def loginLayout():
             def login(e, p):
@@ -74,24 +89,28 @@ if st.session_state['activate'] == True:
             if sB:
                 signup(email, password, username)
 
-
+        # Setting the login screen
         st.title('Account Portal')
         if st.session_state['choice'] == False:
             loginLayout()
         else:
             signupLayout()
 
+        # Checkbox to switch between sign up and login window
         choice = st.checkbox('Create new account', key='choice')
 
+    # Setting the upper portion of the screen after successful login
     if st.session_state['op'] == 'My Account' or st.session_state['op'] == 'Search' or \
             st.session_state['op'] == 'Leaderboard' or \
-            st.session_state['op'] == 'Home' or st.session_state['op'] == 'Forums':
+            st.session_state['op'] == 'Home' or st.session_state['op'] == 'AI Support':
         user = st.session_state['user']
         col1, col2 = st.columns([0.8, 0.2], gap='large')
         with col1:
             st.title('Welcome {}'.format(db.child(st.session_state['user']['localId']).child('Handle').get().val()))
-        op = st.radio('Go to', ['Home', 'Search', 'Leaderboard', 'Forums', 'My Account', 'Logout'], horizontal=True, key='op')
+        op = st.radio('Go to', ['Home', 'Search', 'Leaderboard', 'AI Support', 'My Account', 'Logout'], \
+                      horizontal=True, key='op')
 
+    # Defining the workflow when 'My Account' is selected
     if st.session_state['op'] == 'My Account':
         user = st.session_state['user']
         newImage = db.child(user['localId']).child("Image").get().val()
@@ -146,6 +165,7 @@ if st.session_state['activate'] == True:
                 st.success('Success!')
                 st.rerun()
 
+    # Defining the workflow when 'Search' is selected
     if st.session_state['op'] == 'Search':
         all_users = db.get()
         usrs = []
@@ -182,6 +202,7 @@ if st.session_state['activate'] == True:
                                 st.image(posts.val()['pics'], caption="{}: {}".format(posts.val()['Timestamp'],
                                                                     posts.val()['Post']), use_column_width='always')
 
+    # Defining the workflow when 'Home' is selected
     if st.session_state['op'] == 'Home':
         user = st.session_state['user']
 
@@ -196,7 +217,6 @@ if st.session_state['activate'] == True:
             except:
                 pass
 
-            #st.write(st.session_state)
             if st.session_state['validity'] == 'yes':
                 st.session_state['validity'] = 'temp'
                 st.success('Image accepted')
@@ -219,7 +239,7 @@ if st.session_state['activate'] == True:
             if st.session_state['validity'] == 'no':
                 st.warning('Image not accepted')
 
-        # HOME FEED
+        # Home page
         data = {}
         ids = db.get().val().keys()
         for i in ids:
@@ -248,6 +268,7 @@ if st.session_state['activate'] == True:
             pic = data[i]['pics']
             st.image(pic, caption="{}-{}: {}".format(t, h, p), use_column_width='always')
 
+    # Defining the workflow when 'Leaderboard' is selected
     if st.session_state['op'] == 'Leaderboard':
         leaderboard = {}
         l = db.get().val()
@@ -268,16 +289,27 @@ if st.session_state['activate'] == True:
             with col2:
                 st.info(i[1])
 
-    if st.session_state['op'] == 'Forums':
-        db.child('Forums')
-        col1, col2 = st.columns([0.8, 0.2])
-        with col1:
-            st.write(db.child('Forums').get().val())
-            #st.selectbox('Available topics')
-        with col2:
-            nForum = st.button('Create new')
-            if nForum:
-                fval = st.text_input('Enter new forum')
-                db.child('Forums').set(fval)
-            st.write(db.get().val())
-            
+    # Defining the workflow when 'AI Support' is selected
+    if st.session_state['op'] == 'AI Support':
+        aiChoice = st.selectbox('Choose model', ['Gemini 1.0 Pro', 'Gemini 1.0 Pro Vision'], key='aiChoice')
+        if st.session_state['aiChoice'] == 'Gemini 1.0 Pro':
+            query = st.text_input('Query', placeholder='Type your query here', key='g')
+            submit = st.button('Ask Gemini', key='gQ')
+            if submit:
+                answer = geminiPro.get_text_response(query)
+                st.write(answer)
+
+        if st.session_state['aiChoice'] == 'Gemini 1.0 Pro Vision':
+            geminiChoice = st.selectbox('Select input method', ['File input', 'Camera input'], key='geminiChoice')
+            if st.session_state['geminiChoice'] == 'File input':
+                image = st.file_uploader('Browse image', type=['png', 'jpg'])
+                if image:
+                    st.image(image, use_column_width=True)
+            elif st.session_state['geminiChoice'] == 'Camera input':
+                image = st.camera_input('Capture a photo')
+
+            query = st.text_input('Query', placeholder='Type your query here', key='gV')
+            submit = st.button('Ask Gemini', key='gVQ')
+            if submit:
+                answer = geminiProVision.get_image_response(image, query)
+                st.write(answer)
