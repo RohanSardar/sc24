@@ -7,3 +7,6 @@
 - Firebase
 - Gemini 1.0 Pro
 - Gemini 1.0 Pro Vision
+  
+##### To run this project, run `git clone https://github.com/RohanSardar/sc24`
+##### And then `streamlit run app.py`
