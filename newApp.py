@@ -85,7 +85,7 @@ if st.session_state['activate'] == True:
 
     if st.session_state['op'] == 'My Account' or st.session_state['op'] == 'Search' or \
             st.session_state['op'] == 'Leaderboard' or \
-            st.session_state['op'] == 'Home' or st.session_state['op'] == 'Forum':
+            st.session_state['op'] == 'Home' or st.session_state['op'] == 'Forums':
         user = st.session_state['user']
         col1, col2 = st.columns([0.8, 0.2], gap='large')
         with col1:
@@ -268,10 +268,10 @@ if st.session_state['activate'] == True:
             with col2:
                 st.info(i[1])
 
-    if st.session_state['op'] == 'Forum':
+    if st.session_state['op'] == 'Forums':
         col1, col2 = st.columns([0.8, 0.2])
-        with col1:
-            st.selectbox('Available topics')
+        #with col1:
+            #st.selectbox('Available topics')
         with col2:
             nForum = st.button('Create new')
             st.write(db.get().val())
